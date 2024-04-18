@@ -6,8 +6,31 @@
   <link rel="stylesheet" href="static/bootstrap.min.css">
 <script>
 
-const logout = async (e) => {
-//Include the code for logout here.
+const logout = async () => {
+  let logout_url = window.location.origin + "/djangoapp/logout";
+  try {
+    const res = await fetch(logout_url, {
+      method: "GET", // If CSRF token is necessary, change this to "POST" and send the CSRF token in the request headers
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include' // This will ensure that cookies are sent with the request
+    });
+
+    const json = await res.json();
+    if (json.userName) {
+      let username = json.userName;
+      sessionStorage.removeItem('username');
+      alert("Logging out " + username + "...");
+      window.location.href = window.location.origin;
+    } else {
+      alert("The user could not be logged out.")
+    }
+  } catch (error) {
+    console.error("Logout error:", error);
+    alert("An error occurred during logout.");
+  }
 };
 
 let checkSession = ()=>{
@@ -23,6 +46,8 @@ let checkSession = ()=>{
     '<a class="homepage_links"  href="/register">Register</a>'
   }
  }
+
+
 </script>
 </head>
 <body onload="checkSession()">
